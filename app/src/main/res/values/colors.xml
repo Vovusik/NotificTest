@@ -7,4 +7,16 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="button_notification">#33BABF</color>
+    <color name="background_pager">#02AAB0</color>
+    <color name="background_text"> #49C0BD</color>
+    <color name="button_small">#FFFFFF</color>
+
+
+
+    <color name="status_bar">#2A56C6</color>
+    <!--    android:textStyle="roboto"-->
+
+    <color name="messenger">#2A56C6</color>
 </resources>
