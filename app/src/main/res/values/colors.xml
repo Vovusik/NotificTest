@@ -15,8 +15,5 @@
 
 
 
-    <color name="status_bar">#2A56C6</color>
-    <!--    android:textStyle="roboto"-->
-
     <color name="messenger">#2A56C6</color>
 </resources>

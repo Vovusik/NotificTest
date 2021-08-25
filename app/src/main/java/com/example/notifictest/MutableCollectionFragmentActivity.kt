@@ -1,5 +1,6 @@
 package com.example.notifictest
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.adapter.FragmentStateAdapter
 
 
-const val KEY_ITEM_TEXT = "androidx.viewpager2.integration.testapp.KEY_ITEM_TEXT"
+const val KEY_ITEM_TEXT = "com.example.notifictest.KEY_ITEM_TEXT"
 
 class MutableCollectionFragmentActivity : MutableCollectionBaseActivity() {
 
@@ -35,46 +36,38 @@ class MutableCollectionFragmentActivity : MutableCollectionBaseActivity() {
 
 class PageFragment : Fragment() {
 
-    private lateinit var buttonNotification: Button
-
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?,
     ): View? {
         val view = inflater.inflate(R.layout.item_mutable_collection, container, false)
 
-        buttonNotification = view.findViewById(R.id.buttonNotification)
-        buttonNotification.text =
-            arguments?.getString(KEY_ITEM_TEXT) ?: throw IllegalStateException()
+        val buttonNotification: Button = view.findViewById(R.id.buttonNotification)
+        buttonNotification.setText(R.string.create_new_notification)
+        index = arguments?.getString(KEY_ITEM_TEXT) ?: throw IllegalStateException()
 
         buttonNotification.setOnClickListener {
 
             val toast = Toast.makeText(
-                activity,
-                "Push " + buttonNotification.text, Toast.LENGTH_SHORT
+                    activity,
+                    "Notification $index", Toast.LENGTH_SHORT
             )
             toast.show()
 
             MNotification(context).notificationReminder()
-
-
-//            val args = Bundle()
-//            val name = buttonNotification.text.toString()
-//            val fragment = PageFragment()
-//            args.putString(KEY_ITEM_TEXT, name)
-//            fragment.arguments = args
-
         }
         return view
     }
 
     companion object {
+        @SuppressLint("StaticFieldLeak")
+        var index = ""
         fun newInstance(itemText: String) =
-            PageFragment().apply {
-                arguments = Bundle(1).apply {
-                    putString(KEY_ITEM_TEXT, itemText)
+                PageFragment().apply {
+                    arguments = Bundle(1).apply {
+                        putString(KEY_ITEM_TEXT, itemText)
+                    }
                 }
-            }
     }
 }

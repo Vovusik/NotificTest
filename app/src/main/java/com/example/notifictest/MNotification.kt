@@ -3,9 +3,7 @@ package com.example.notifictest
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
 import android.graphics.BitmapFactory
 import android.media.RingtoneManager
 import android.os.Build
@@ -21,31 +19,24 @@ class MNotification(private val context: Context?) {
         const val CHANNEL_ID = "channelID"
     }
 
-//    fun create(itemText: String) =
-//        PageFragment().apply {
-//            arguments = Bundle(1).apply {
-//                putString(KEY_ITEM_TEXT, itemText)
-//            }
-//        }
-
     private val largeIcon = BitmapFactory.decodeResource(
         context?.resources,
-        R.drawable.outline_person_black_36)
+        R.drawable.outline_person_black_36
+    )
 
     @SuppressLint("UnspecifiedImmutableFlag", "WrongConstant")
     fun notificationReminder() {
 
         // Створюю явний намір для діяльності у своєму додатку
-        val intent = Intent(context, MutableCollectionFragmentActivity::class.java)
-        val pendingIntent =
-            PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-
-        val openIntent = Intent(context, MNotification::class.java)
-        val pendingOpenIntent =
-        PendingIntent.getActivity(context, 1, openIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+//        val intent = Intent(context, MutableCollectionFragmentActivity::class.java)
+//        val pendingIntent =
+//            PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+//
+//        val openIntent = Intent(context, MNotification::class.java)
+//        val pendingOpenIntent =
+//        PendingIntent.getActivity(context, 1, openIntent, PendingIntent.FLAG_UPDATE_CURRENT)
 
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-
 
         //  Встановлюю вміст і канал сповіщення
         val builder =
@@ -54,17 +45,12 @@ class MNotification(private val context: Context?) {
                     .setLargeIcon(largeIcon)
                     .setSmallIcon(R.drawable.ic_messenger)
                     .setContentTitle("Chat heads active")
-                    .setContentText("Notification №")
-                    //.setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                    //.setVisibility(NotificationCompat.DEFAULT_VIBRATE)
-                    //.setAutoCancel(true)
-                    //.setShowWhen(true)
-                    //.setOngoing(true)
-                    .addAction(0, "Action", pendingOpenIntent)
+                    .setContentText("Notification " + PageFragment.index)
+                    //.addAction(0, "Action", pendingOpenIntent)
                     .setColor(ContextCompat.getColor(context, R.color.messenger))
                     .setStyle(NotificationCompat.BigTextStyle())// Стиль сповіщення
                     .setSound(defaultSoundUri) // Встановити звук
-                    .setContentIntent(pendingIntent)
+                    // .setContentIntent(pendingIntent)
             }
 
         // Надіслати сповіщення

@@ -2,6 +2,8 @@ package com.example.notifictest
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.view.View.INVISIBLE
+import android.view.View.VISIBLE
 import android.widget.*
 import androidx.activity.viewModels
 import androidx.fragment.app.FragmentActivity
@@ -41,44 +43,66 @@ abstract class MutableCollectionBaseActivity : FragmentActivity() {
 
             val idsOld = items.createIdSnapshot()
             performChanges()
+            notifyDataSetChanged()
             val idsNew = items.createIdSnapshot()
             DiffUtil.calculateDiff(object : DiffUtil.Callback() {
                 override fun getOldListSize(): Int = idsOld.size
                 override fun getNewListSize(): Int = idsNew.size
 
                 override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-                    idsOld[oldItemPosition] == idsNew[newItemPosition]
+                        idsOld[oldItemPosition] == idsNew[newItemPosition]
 
                 override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-                    areItemsTheSame(oldItemPosition, newItemPosition)
+                        areItemsTheSame(oldItemPosition, newItemPosition)
             }, true).dispatchUpdatesTo(viewPager.adapter!!)
         }
 
         buttonRemove.setOnClickListener {
-            changeDataSet { items.removeAt(viewPager.currentItem) }
-
+            changeDataSet { items.removeAt(items.size - 1) }
+            viewPager.setCurrentItem(items.size, true)
         }
 
         buttonAdd.setOnClickListener {
             changeDataSet { items.addNewAt(items.size) }
+            viewPager.setCurrentItem(items.size, true)
         }
     }
 
     private fun displayMetaInfo(position: Int) {
         counterText.text = items.itemId(position).toString()
+
+        notifyDataSetChanged()
+
+        showHide(position)
+
+    }
+
+    private fun showHide(position: Int) {
+        if (position == 0) {
+            buttonRemove.visibility = INVISIBLE
+        } else {
+            buttonRemove.visibility = VISIBLE
+        }
     }
 
     abstract fun createViewPagerAdapter(): RecyclerView.Adapter<*>
 
     val items: ItemsViewModel by viewModels()
+
+    /**
+     * Shows how to use notifyDataSetChanged with [ViewPager2]
+     */
+    @SuppressLint("NotifyDataSetChanged")
+    private fun notifyDataSetChanged() {
+        viewPager.adapter!!.notifyDataSetChanged()
+    }
 }
 
 
 /** Колекція предметів. Оптимізовано для простоти (тобто не продуктивності). */
 class ItemsViewModel : ViewModel() {
-    private var nextValue = 1
+    private var nextValue = 1L
 
-    // створюю колекцію з 1-го елемента
     private val items = (1..1).map { longToItem(nextValue++) }.toMutableList()
 
     fun getItemById(id: Long): String = items.first { itemToLong(it) == id }
@@ -86,9 +110,9 @@ class ItemsViewModel : ViewModel() {
     fun contains(itemId: Long): Boolean = items.any { itemToLong(it) == itemId }
     fun addNewAt(position: Int) = items.add(position, longToItem(nextValue++))
     fun removeAt(position: Int) = items.removeAt(position)
-    fun createIdSnapshot(): List<Long> = (1 until size).map { position -> itemId(position) }
+    fun createIdSnapshot(): List<Long> = (0 until size).map { position -> itemId(position) }
     val size: Int get() = items.size
 
-    private fun longToItem(value: Int): String = "item#$value"
-    private fun itemToLong(value: String): Long = value.split("#")[1].toLong()
+    private fun longToItem(value: Long): String = "$value"
+    private fun itemToLong(value: String): Long = value.split("")[1].toLong()
 }
