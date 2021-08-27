@@ -2,6 +2,7 @@ package com.example.notifictest
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.widget.*
@@ -20,6 +21,8 @@ abstract class MutableCollectionBaseActivity : FragmentActivity() {
     private lateinit var viewPager: ViewPager2
     private lateinit var counterText: TextView
 
+    private val TAG = "MutableCollectionBaseActivity"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_mutable_collection)
@@ -31,8 +34,11 @@ abstract class MutableCollectionBaseActivity : FragmentActivity() {
 
         viewPager.adapter = createViewPagerAdapter()
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            @SuppressLint("LongLogTag")
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
+
+                Log.d(TAG, "###Сторінка PageSelected ${position + 1}")
 
                 displayMetaInfo(position)
             }
@@ -43,23 +49,30 @@ abstract class MutableCollectionBaseActivity : FragmentActivity() {
 
             val idsOld = items.createIdSnapshot()
             performChanges()
-            notifyDataSetChanged()
+
             val idsNew = items.createIdSnapshot()
             DiffUtil.calculateDiff(object : DiffUtil.Callback() {
                 override fun getOldListSize(): Int = idsOld.size
                 override fun getNewListSize(): Int = idsNew.size
 
                 override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-                        idsOld[oldItemPosition] == idsNew[newItemPosition]
+                    idsOld[oldItemPosition] == idsNew[newItemPosition]
 
                 override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-                        areItemsTheSame(oldItemPosition, newItemPosition)
+                    areItemsTheSame(oldItemPosition, newItemPosition)
             }, true).dispatchUpdatesTo(viewPager.adapter!!)
         }
 
         buttonRemove.setOnClickListener {
-            changeDataSet { items.removeAt(items.size - 1) }
-            viewPager.setCurrentItem(items.size, true)
+            // Видаляємо останню, переходимо на передостанню
+//            changeDataSet { items.removeAt(items.size - 1) }
+//            viewPager.setCurrentItem(items.size, true)
+
+            // При видаленні поточної, переходимо на попередню
+            changeDataSet { items.removeAt(viewPager.currentItem) }
+            viewPager.setCurrentItem(viewPager.currentItem - 1, true)
+
+
         }
 
         buttonAdd.setOnClickListener {
@@ -68,13 +81,11 @@ abstract class MutableCollectionBaseActivity : FragmentActivity() {
         }
     }
 
+
     private fun displayMetaInfo(position: Int) {
         counterText.text = items.itemId(position).toString()
 
-        notifyDataSetChanged()
-
         showHide(position)
-
     }
 
     private fun showHide(position: Int) {
@@ -114,5 +125,5 @@ class ItemsViewModel : ViewModel() {
     val size: Int get() = items.size
 
     private fun longToItem(value: Long): String = "$value"
-    private fun itemToLong(value: String): Long = value.split("")[1].toLong()
+    private fun itemToLong(value: String): Long = value.toLong()
 }

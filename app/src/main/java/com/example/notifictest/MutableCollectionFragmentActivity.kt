@@ -2,6 +2,7 @@ package com.example.notifictest
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,7 +36,7 @@ class MutableCollectionFragmentActivity : MutableCollectionBaseActivity() {
 }
 
 class PageFragment : Fragment() {
-
+    private val TAG = "PageFragment"
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
@@ -54,6 +55,8 @@ class PageFragment : Fragment() {
                     "Notification $index", Toast.LENGTH_SHORT
             )
             toast.show()
+
+            Log.i(TAG, "### Сповіщення $index")
 
             MNotification(context).notificationReminder()
         }
