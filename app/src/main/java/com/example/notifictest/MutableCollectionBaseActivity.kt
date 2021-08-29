@@ -1,18 +1,21 @@
 package com.example.notifictest
 
 import android.annotation.SuppressLint
+import android.app.NotificationManager
 import android.os.Bundle
 import android.util.Log
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.widget.*
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
+import com.example.notifictest.PageFragment.Companion.NOTIFICATION_ID
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+
 
 abstract class MutableCollectionBaseActivity : FragmentActivity() {
 
@@ -23,6 +26,7 @@ abstract class MutableCollectionBaseActivity : FragmentActivity() {
 
     private val TAG = "MutableCollectionBaseActivity"
 
+    @SuppressLint("CommitTransaction")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_mutable_collection)
@@ -38,7 +42,7 @@ abstract class MutableCollectionBaseActivity : FragmentActivity() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
 
-                Log.d(TAG, "###Сторінка PageSelected ${position + 1}")
+                Log.i(TAG, "Сторінка ${position + 1}")
 
                 displayMetaInfo(position)
             }
@@ -49,7 +53,7 @@ abstract class MutableCollectionBaseActivity : FragmentActivity() {
 
             val idsOld = items.createIdSnapshot()
             performChanges()
-
+            notifyDataSetChanged()
             val idsNew = items.createIdSnapshot()
             DiffUtil.calculateDiff(object : DiffUtil.Callback() {
                 override fun getOldListSize(): Int = idsOld.size
@@ -64,15 +68,11 @@ abstract class MutableCollectionBaseActivity : FragmentActivity() {
         }
 
         buttonRemove.setOnClickListener {
-            // Видаляємо останню, переходимо на передостанню
-//            changeDataSet { items.removeAt(items.size - 1) }
-//            viewPager.setCurrentItem(items.size, true)
+            // Видаляємо останню
+            changeDataSet { items.removeAt(items.size - 1) }
+            viewPager.setCurrentItem(items.size, true) //переходимо на передостанню
 
-            // При видаленні поточної, переходимо на попередню
-            changeDataSet { items.removeAt(viewPager.currentItem) }
-            viewPager.setCurrentItem(viewPager.currentItem - 1, true)
-
-
+            removeNotification()
         }
 
         buttonAdd.setOnClickListener {
@@ -81,6 +81,11 @@ abstract class MutableCollectionBaseActivity : FragmentActivity() {
         }
     }
 
+    open fun removeNotification() {
+        val notificationManager =
+            getSystemService(AppCompatActivity.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancel(NOTIFICATION_ID)
+    }
 
     private fun displayMetaInfo(position: Int) {
         counterText.text = items.itemId(position).toString()
@@ -107,23 +112,4 @@ abstract class MutableCollectionBaseActivity : FragmentActivity() {
     private fun notifyDataSetChanged() {
         viewPager.adapter!!.notifyDataSetChanged()
     }
-}
-
-
-/** Колекція предметів. Оптимізовано для простоти (тобто не продуктивності). */
-class ItemsViewModel : ViewModel() {
-    private var nextValue = 1L
-
-    private val items = (1..1).map { longToItem(nextValue++) }.toMutableList()
-
-    fun getItemById(id: Long): String = items.first { itemToLong(it) == id }
-    fun itemId(position: Int): Long = itemToLong(items[position])
-    fun contains(itemId: Long): Boolean = items.any { itemToLong(it) == itemId }
-    fun addNewAt(position: Int) = items.add(position, longToItem(nextValue++))
-    fun removeAt(position: Int) = items.removeAt(position)
-    fun createIdSnapshot(): List<Long> = (0 until size).map { position -> itemId(position) }
-    val size: Int get() = items.size
-
-    private fun longToItem(value: Long): String = "$value"
-    private fun itemToLong(value: String): Long = value.toLong()
 }

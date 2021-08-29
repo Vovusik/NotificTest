@@ -26,11 +26,12 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="29dp"
         android:layout_marginBottom="32dp"
-       android:backgroundTint="@color/white"
+        android:backgroundTint="@color/white"
         android:src="@drawable/ic_baseline_remove_24"
-        app:tint="@color/background_pager"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:tint="@color/background_pager"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/counter"
@@ -38,27 +39,27 @@
         android:layout_height="50dp"
         android:layout_marginStart="-50dp"
         android:layout_marginEnd="-50dp"
-        android:gravity="center"
         android:background="@drawable/round_shape_txt_count"
-        android:text="1"
+        android:gravity="center"
         android:textColor="@android:color/white"
         android:textSize="24sp"
         android:textStyle="normal"
         app:layout_constraintBottom_toBottomOf="@+id/buttonRemove"
         app:layout_constraintEnd_toStartOf="@+id/buttonAddAfter"
         app:layout_constraintStart_toEndOf="@+id/buttonRemove"
-        app:layout_constraintTop_toTopOf="@+id/buttonRemove" />
+        app:layout_constraintTop_toTopOf="@+id/buttonRemove"
+        tools:text="1" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/buttonAddAfter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="29dp"
-        android:src="@drawable/ic_baseline_add_24"
         android:backgroundTint="@color/white"
-        app:tint="@color/background_pager"
+        android:src="@drawable/ic_baseline_add_24"
         app:layout_constraintBottom_toBottomOf="@+id/buttonRemove"
         app:layout_constraintEnd_toEndOf="parent"
+        app:tint="@color/background_pager"
         tools:ignore="ContentDescription" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
